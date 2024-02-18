@@ -4,6 +4,10 @@ export folder=.
 rm -rf ${project}.hw/webtalk/*
 rm -rf ${project}.hw/webtalk/\.x*
 
+cd software
+cm clean
+cd ..
+
 git add ${folder}/${project}.gen
 git add ${folder}/${project}.hw
 git add ${folder}/${project}.ip_user_files
