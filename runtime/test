@@ -1,0 +1,42 @@
+source "mindy_api.sh"
+
+set +x
+# Set the locations of the host frame data buffers
+write_reg64 $REG_HFD00_ADDR_H 0x0_0000_0000
+write_reg64 $REG_HFD01_ADDR_H 0x1_0000_0000
+write_reg64 $REG_HFD10_ADDR_H 0x2_0000_0000
+write_reg64 $REG_HFD11_ADDR_H 0x3_0000_0000
+
+# Set the size of the host frame data buffers
+write_reg64 $REG_HFD_BYTES_H 0x1_0000_0000
+
+# Set the locations of the host meta-data buffers
+write_reg64 $REG_HMD0_ADDR_H 0xA_0000_0000
+write_reg64 $REG_HMD1_ADDR_H 0xB_0000_0000
+
+# Set the size of the host meta-data buffers
+write_reg64 $REG_HMD_BYTES_H 512
+
+# Number of bytes that are in a single frame
+pcireg $REG_FRAME_SIZE 2048
+
+# Number of bytes in a packet being sent to the receiver
+pcireg $REG_PACKET_SIZE 512
+
+# Number of packets in a ping-pong group
+pcireg $REG_PACKETS_PER_GROUP 2
+
+
+# Location and size of the frame-data ring buffer on the receiver
+write_reg64 $REG_RFD_ADDR_H 0x8_0000_0000
+write_reg64 $REG_RFD_SIZE_H 0x1000
+
+# Location and size of the meta-data ring buffer on the receiver
+write_reg64 $REG_RMD_ADDR_H 0x9_0000_0000
+write_reg64 $REG_RMD_SIZE_H 512
+
+# Address of the frame-counter on the receiver
+write_reg64 $REG_RFC_ADDR_H 0xC_0000_1230
+
+
+
