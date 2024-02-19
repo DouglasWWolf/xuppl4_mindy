@@ -102,8 +102,12 @@ module rdmx_shim #
     input                                                   M_AXI_RVALID,
     input[1:0]                                              M_AXI_RRESP,
     input                                                   M_AXI_RLAST,
-    output                                  M_AXI_RREADY
+    output                                  M_AXI_RREADY,
     //==========================================================================
+
+    // These are for debugging with an ILA
+    output reg[31:0] frame_count,
+    output           eof
 );
 
 // The width of a meta-data in bytes
@@ -119,9 +123,6 @@ wire[63:0] next_fd_ptr = fd_ptr + PACKET_SIZE;
 // Offset where we'll write the next meta-data
 reg [63:0] md_ptr;
 wire[63:0] next_md_ptr = md_ptr + METADATA_WIDTH;
-
-// Every time we output a complete frame, this is incremented and output
-reg[31:0] frame_count;
 
 // When writing data-bursts to the output interface, this is the current beat
 reg[8:0] beat;
@@ -511,6 +512,10 @@ always @(posedge clk) begin
     endcase
 
 end
+
+// This flag is asserted for one cycle at the end of a frame and is
+// useful for examining end-of-frame behavior in an ILA
+assign eof = (fsm_state == FSM_OUTPUT_FC) & M_AXI_WVALID & M_AXI_WREADY;
 //=============================================================================
 
 endmodule

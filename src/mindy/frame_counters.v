@@ -21,7 +21,11 @@ module frame_counters
     (* X_INTERFACE_PARAMETER = "ASSOCIATED_RESET resetn:external_resetn" *)
     input   clk,
     input   resetn,
-    
+
+    // This is asserted on any clock cycle when we are trying to write to the
+    // command FIFO, but it isn't ready to receive 
+    output  fifo_overflow,
+
     // This resets modules external to this one
     output  external_resetn,
 
@@ -118,6 +122,9 @@ localparam ADDR_MASK = 7'h7F;
 reg[7:0] axis_cmd_tdata;
 reg      axis_cmd_tvalid;
 wire     axis_cmd_tready;
+
+// Assert the "overflow" signal if we attempt to write to a full FIFO
+assign fifo_overflow = axis_cmd_tvalid & ~axis_cmd_tready;
 
 // Thse are frame counters, one for each phase
 reg[31:0] frame_counter[0:1];

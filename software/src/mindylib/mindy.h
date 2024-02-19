@@ -16,6 +16,20 @@ public:
     // Call this once to connect to Mindy over PCIe
     void        init(std::string pcieID = "10EE:903F");
 
+    // Returns a string containing the version of the RTL build
+    std::string getRtlBuildStr();
+    
+    // Returns a string containing the date of the RTL build
+    std::string getRtlDateStr();
+
+    // Fetch the "connected" status of the two QSFP interfaces.
+    //   Bit 0 : 1 = QSFP_0 is connected, 0 = not connected.
+    //   Bit 1 : 1 = QSFP_1 is connected, 0 = not connected.
+    uint32_t    getQsfpStatus();
+
+    // Returns a non-zero code to report a latched error state
+    uint32_t    getErrorStatus();
+
     // Get and set the address of the data-frame buffers on the host PC
     void        setHostFrameDataAddr(uint32_t phase, uint32_t semiphase, uint64_t address);
     uint64_t    getHostFrameDataAddr(uint32_t phase, uint32_t semiphase);

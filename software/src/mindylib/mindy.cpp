@@ -10,13 +10,19 @@ using namespace std;
 // This is a connection to the PCI bus
 static PciDevice PCI;
 
+static const uint32_t BV_BASE = 0;
+static const uint32_t REG_BUILD_MAJOR = BV_BASE + 0*4;
+static const uint32_t REG_BUILD_MINOR = BV_BASE + 1*4;
+static const uint32_t REG_BUILD_REV   = BV_BASE + 2*4;
+static const uint32_t REG_BUILD_RC    = BV_BASE + 3*4;
+static const uint32_t REG_BUILD_DATE  = BV_BASE + 4*4;
+
 // Addresses of the two frame counters
-const uint32_t REG_MODULE_REV = 0x1000;
-const uint32_t REG_FC0        = 0x1004;
-const uint32_t REG_FC1        = 0x1008;     
+const uint32_t REG_FC0 = 0x1004;
+const uint32_t REG_FC1 = 0x1008;     
 
 // Registers registers in the "data fetch" module
-const uint32_t DF_BASE=0x2000;
+const uint32_t DF_BASE = 0x2000;
 const uint32_t REG_HFD00_ADDR_H = DF_BASE +  1*4;
 const uint32_t REG_HFD00_ADDR_L = DF_BASE +  2*4;
 const uint32_t REG_HFD01_ADDR_H = DF_BASE +  3*4;
@@ -36,12 +42,12 @@ const uint32_t  REG_HMD_BYTES_L = DF_BASE + 16*4;
 const uint32_t   REG_FRAME_SIZE = DF_BASE + 17*4;
 
 // Registers in the "ping ponger" module
-const uint32_t PP_BASE=0x3000;
+const uint32_t PP_BASE = 0x3000;
 const uint32_t       REG_PACKET_SIZE = PP_BASE + 0*4;
 const uint32_t REG_PACKETS_PER_GROUP = PP_BASE + 1*4;
 
 // Registers in the "RDMX shim" module
-const uint32_t RS_BASE=0x4000;
+const uint32_t RS_BASE = 0x4000;
 const uint32_t REG_RFD_ADDR_H = RS_BASE + 0*4;
 const uint32_t REG_RFD_ADDR_L = RS_BASE + 1*4;
 const uint32_t REG_RFD_SIZE_H = RS_BASE + 2*4;
@@ -53,6 +59,10 @@ const uint32_t REG_RMD_SIZE_L = RS_BASE + 7*4;
 const uint32_t REG_RFC_ADDR_H = RS_BASE + 8*4;
 const uint32_t REG_RFC_ADDR_L = RS_BASE + 9*4;
 
+// Registers in the "status manager" module
+const uint32_t SM_BASE = 0x5000;
+const uint32_t REG_QSFP_STATUS  = SM_BASE + 0*4;
+const uint32_t REG_ERROR_STATUS = SM_BASE + 1*4;
 
 
 //=================================================================================================
@@ -142,10 +152,10 @@ void CMindy::init(string pcieID)
     BAR0_ = PCI.resourceList()[0].baseAddr;
 
     // If it looks like we need a hot-reset, do so
-    if (read32(REG_MODULE_REV) == 0xFFFFFFFF) PCI.hotReset(pcieID);
+    if (read32(REG_BUILD_MAJOR) == 0xFFFFFFFF) PCI.hotReset(pcieID);
 
     // If we still can't read the module revision after a hot-reset, drop-dead
-    if (read32(REG_MODULE_REV) == 0xFFFFFFFF)
+    if (read32(REG_BUILD_MAJOR) == 0xFFFFFFFF)
         throwRuntime("Can't connect to %s", pcieID.c_str());
 }
 //=================================================================================================
@@ -158,12 +168,16 @@ void CMindy::setHostFrameDataAddr(uint32_t phase, uint32_t semiphase, uint64_t a
 {
     if      (phase == 0 && semiphase == 0)
         write64(REG_HFD00_ADDR_H, address);
+    
     else if (phase == 0 && semiphase == 1)
         write64(REG_HFD01_ADDR_H, address);
+    
     else if (phase == 1 && semiphase == 0)
         write64(REG_HFD10_ADDR_H, address);
+    
     else if (phase == 1 && semiphase == 1)
         write64(REG_HFD11_ADDR_H, address);
+    
     else
         throwRuntime("bad parameter on setHostFrameDataAddr()");
 }
@@ -175,16 +189,20 @@ void CMindy::setHostFrameDataAddr(uint32_t phase, uint32_t semiphase, uint64_t a
 //=================================================================================================
 uint64_t CMindy::getHostFrameDataAddr(uint32_t phase, uint32_t semiphase)
 {
-    if      (phase == 0 && semiphase == 0)
+    if (phase == 0 && semiphase == 0)
         return read64(REG_HFD00_ADDR_H);
-    else if (phase == 0 && semiphase == 1)
+    
+    if (phase == 0 && semiphase == 1)
         return read64(REG_HFD01_ADDR_H);
-    else if (phase == 1 && semiphase == 0)
+    
+    if (phase == 1 && semiphase == 0)
         return read64(REG_HFD10_ADDR_H);
-    else if (phase == 1 && semiphase == 1)
+    
+    if (phase == 1 && semiphase == 1)
         return read64(REG_HFD11_ADDR_H);
-    else
-        throwRuntime("bad parameter on getHostFrameDataAddr()");
+    
+    // If we get here, there was an illegal value for phase or semiphase
+    throwRuntime("bad parameter on getHostFrameDataAddr()");
 
     // This is just here to keep the compiler happy
     return 0;
@@ -200,8 +218,10 @@ void CMindy::setHostMetaDataAddr(uint32_t phase, uint64_t address)
 {
     if      (phase == 0)
         write64(REG_HMD0_ADDR_H, address);
+
     else if (phase == 1)
         write64(REG_HMD1_ADDR_H, address);
+
     else
         throwRuntime("bad parameter on setHostMetaDataAddr()");
 }
@@ -214,12 +234,14 @@ void CMindy::setHostMetaDataAddr(uint32_t phase, uint64_t address)
 //=================================================================================================
 uint64_t CMindy::getHostMetaDataAddr(uint32_t phase)
 {
-    if      (phase == 0)
+    if (phase == 0)
         return read64(REG_HMD0_ADDR_H);
-    else if (phase == 1)
+
+    if (phase == 1)
         return read64(REG_HMD1_ADDR_H);
-    else
-        throwRuntime("bad parameter on getHostMetaDataAddr()");
+    
+    // If we get here, there was an illegal value for "phase"
+    throwRuntime("bad parameter on getHostMetaDataAddr()");
 
     // This is just here to keep the compiler happy
     return 0;
@@ -467,5 +489,94 @@ uint32_t CMindy::getLocalFrameCounter(uint32_t phase)
     if (phase == 1) return read32(REG_FC1);
     throwRuntime("bad parameter on getLocalFrameCounter()");
     return 0;
+}
+//=================================================================================================    
+
+
+//=================================================================================================    
+// getQsfpStatus() - Returns the "connected" status of the QSFP network interfaces
+//
+// Bit 0 : 1 = QSFP_0 is connected, 0 = Not connected
+// Bit 1 : 1 = QSFP_1 is connected, 0 = Not connected
+//=================================================================================================    
+uint32_t CMindy::getQsfpStatus()
+{
+    return read32(REG_QSFP_STATUS);    
+}
+//=================================================================================================    
+
+
+//=================================================================================================    
+// getErrorStatus() - Returns an error-status word.  Non-zero indicates a fault
+//=================================================================================================    
+uint32_t CMindy::getErrorStatus()
+{
+    return read32(REG_ERROR_STATUS);    
+}
+//=================================================================================================    
+
+
+//=================================================================================================    
+// getRtlDateStr() - Returns a string containing the RTL build date
+//=================================================================================================    
+string CMindy::getRtlDateStr()
+{
+    char buffer[100];
+    const char* name[] =
+    {
+        "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+
+    // Fetch the value of the register that contains the build date
+    uint32_t dateBits = read32(REG_BUILD_DATE);
+
+    // Split the dateBits into month, day, year
+    int month =(dateBits >> 24) & 0xFF;
+    int day   =(dateBits >> 16) & 0xFF;
+    int year = (dateBits      ) & 0xFFFF;
+
+    // Ensure that at least the month is legal
+    if (month < 1 || month > 12) return "N/A";
+
+    // Format the date like this: "02-Feb-2024"
+    sprintf(buffer, "%02i-%s-%i", day, name[month], year);
+
+    // Hand the4 resulting string to the caller
+    return buffer;
+}
+//=================================================================================================    
+
+
+
+//=================================================================================================    
+// getRtlBuildStr() - Returns a string containing the build version of the RTL
+//=================================================================================================    
+string CMindy::getRtlBuildStr()
+{
+    string retVal;
+    char buffer[100];
+
+    // Fetch the components of the build version
+    int major = read32(REG_BUILD_MAJOR);
+    int minor = read32(REG_BUILD_MINOR);
+    int rev   = read32(REG_BUILD_REV  );
+    int rc    = read32(REG_BUILD_RC   );
+
+    // Format the string
+    sprintf(buffer, "%i.%i.%02i", major, minor, rev);
+
+    // Store the buffer we just formatted into our return string
+    retVal = buffer;
+
+    // If this is a release candidate, append that to the return string
+    if (rc)
+    {
+        sprintf(buffer, "-rc-%i", rc);
+        retVal = retVal + buffer;
+    }
+
+    // Hand the caller the resulting build-version string
+    return retVal;
 }
 //=================================================================================================    

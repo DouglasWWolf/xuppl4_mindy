@@ -82,6 +82,10 @@ module bd_9bbd_wrapper
     SLOT_1_AXI_wstrb,
     SLOT_1_AXI_wvalid,
     clk,
+    probe0,
+    probe1,
+    probe2,
+    probe3,
     resetn);
   input [63:0]SLOT_0_AXI_araddr;
   input [1:0]SLOT_0_AXI_arburst;
@@ -158,6 +162,10 @@ module bd_9bbd_wrapper
   input [63:0]SLOT_1_AXI_wstrb;
   input SLOT_1_AXI_wvalid;
   input clk;
+  input [31:0]probe0;
+  input [0:0]probe1;
+  input [31:0]probe2;
+  input [0:0]probe3;
   input resetn;
 
   wire [63:0]SLOT_0_AXI_araddr;
@@ -235,6 +243,10 @@ module bd_9bbd_wrapper
   wire [63:0]SLOT_1_AXI_wstrb;
   wire SLOT_1_AXI_wvalid;
   wire clk;
+  wire [31:0]probe0;
+  wire [0:0]probe1;
+  wire [31:0]probe2;
+  wire [0:0]probe3;
   wire resetn;
 
   bd_9bbd bd_9bbd_i
@@ -313,5 +325,9 @@ module bd_9bbd_wrapper
         .SLOT_1_AXI_wstrb(SLOT_1_AXI_wstrb),
         .SLOT_1_AXI_wvalid(SLOT_1_AXI_wvalid),
         .clk(clk),
+        .probe0(probe0),
+        .probe1(probe1),
+        .probe2(probe2),
+        .probe3(probe3),
         .resetn(resetn));
 endmodule

@@ -93,24 +93,14 @@ set_property PACKAGE_PIN Ae34 [get_ports qsfp1_clk_clk_n]
 ##########           LEDs           ##########
 ##############################################
 
-set_property -dict {IOSTANDARD LVCMOS18 PACKAGE_PIN AR24} [get_ports {qsfp0_up}]
-set_property -dict {IOSTANDARD LVCMOS18 PACKAGE_PIN AT26} [get_ports {qsfp1_up}]
+set_property -dict {PACKAGE_PIN AR24  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_green_l[0]}]
+set_property -dict {PACKAGE_PIN AT26  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_green_l[1]}]
+set_property -dict {PACKAGE_PIN AR23  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_green_l[2]}]
+set_property -dict {PACKAGE_PIN AR26  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_green_l[3]}]
 
+set_property -dict {PACKAGE_PIN AP24  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_orange_l[0]}]
+set_property -dict {PACKAGE_PIN AT25  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_orange_l[1]}]
+set_property -dict {PACKAGE_PIN AP23  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_orange_l[2]}]
+set_property -dict {PACKAGE_PIN AR25  IOSTANDARD LVCMOS18  PULLTYPE PULLUP} [get_ports {led_orange_l[3]}]
 
-
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_green_l[1]}]
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_green_l[2]}]
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_green_l[3]}]
-#set_property PACKAGE_PIN AR24 [get_ports {led_green_l[0]}]
-#set_property PACKAGE_PIN AT26 [get_ports {led_green_l[1]}]
-#set_property PACKAGE_PIN AR23 [get_ports {led_green_l[2]}]
-#set_property PACKAGE_PIN AR26 [get_ports {led_green_l[3]}]
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_orange_l[0]}]
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_orange_l[1]}]
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_orange_l[2]}]
-#set_property IOSTANDARD LVCMOS18 [get_ports {led_orange_l[3]}]
-#set_property PACKAGE_PIN AP24 [get_ports {led_orange_l[0]}]
-#set_property PACKAGE_PIN AT25 [get_ports {led_orange_l[1]}]
-#set_property PACKAGE_PIN AP23 [get_ports {led_orange_l[2]}]
-#set_property PACKAGE_PIN AR25 [get_ports {led_orange_l[3]}]
 
