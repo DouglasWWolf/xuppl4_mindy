@@ -4,12 +4,13 @@ proc init_gui { IPINST } {
   #Adding Page
   set Page_0 [ipgui::add_page $IPINST -name "Page 0"]
   ipgui::add_param $IPINST -name "ADDR_WBITS" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "ADDR_WBYTS" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "DATA_FIFO_SIZE" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "DATA_FIFO_DEPTH" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "DATA_WBITS" -parent ${Page_0}
   ipgui::add_param $IPINST -name "DST_IP0" -parent ${Page_0}
   ipgui::add_param $IPINST -name "DST_IP1" -parent ${Page_0}
   ipgui::add_param $IPINST -name "DST_IP2" -parent ${Page_0}
   ipgui::add_param $IPINST -name "DST_IP3" -parent ${Page_0}
+  ipgui::add_param $IPINST -name "FIFO_CLOCK_MODE" -parent ${Page_0}
   ipgui::add_param $IPINST -name "MAX_PACKET_COUNT" -parent ${Page_0}
   ipgui::add_param $IPINST -name "REMOTE_SERVER_PORT" -parent ${Page_0}
   ipgui::add_param $IPINST -name "SOURCE_PORT" -parent ${Page_0}
@@ -18,8 +19,6 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "SRC_IP2" -parent ${Page_0}
   ipgui::add_param $IPINST -name "SRC_IP3" -parent ${Page_0}
   ipgui::add_param $IPINST -name "SRC_MAC" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "STREAM_WBITS" -parent ${Page_0}
-  ipgui::add_param $IPINST -name "STREAM_WBYTS" -parent ${Page_0}
 
 
 }
@@ -33,21 +32,21 @@ proc validate_PARAM_VALUE.ADDR_WBITS { PARAM_VALUE.ADDR_WBITS } {
 	return true
 }
 
-proc update_PARAM_VALUE.ADDR_WBYTS { PARAM_VALUE.ADDR_WBYTS } {
-	# Procedure called to update ADDR_WBYTS when any of the dependent parameters in the arguments change
+proc update_PARAM_VALUE.DATA_FIFO_DEPTH { PARAM_VALUE.DATA_FIFO_DEPTH } {
+	# Procedure called to update DATA_FIFO_DEPTH when any of the dependent parameters in the arguments change
 }
 
-proc validate_PARAM_VALUE.ADDR_WBYTS { PARAM_VALUE.ADDR_WBYTS } {
-	# Procedure called to validate ADDR_WBYTS
+proc validate_PARAM_VALUE.DATA_FIFO_DEPTH { PARAM_VALUE.DATA_FIFO_DEPTH } {
+	# Procedure called to validate DATA_FIFO_DEPTH
 	return true
 }
 
-proc update_PARAM_VALUE.DATA_FIFO_SIZE { PARAM_VALUE.DATA_FIFO_SIZE } {
-	# Procedure called to update DATA_FIFO_SIZE when any of the dependent parameters in the arguments change
+proc update_PARAM_VALUE.DATA_WBITS { PARAM_VALUE.DATA_WBITS } {
+	# Procedure called to update DATA_WBITS when any of the dependent parameters in the arguments change
 }
 
-proc validate_PARAM_VALUE.DATA_FIFO_SIZE { PARAM_VALUE.DATA_FIFO_SIZE } {
-	# Procedure called to validate DATA_FIFO_SIZE
+proc validate_PARAM_VALUE.DATA_WBITS { PARAM_VALUE.DATA_WBITS } {
+	# Procedure called to validate DATA_WBITS
 	return true
 }
 
@@ -84,6 +83,15 @@ proc update_PARAM_VALUE.DST_IP3 { PARAM_VALUE.DST_IP3 } {
 
 proc validate_PARAM_VALUE.DST_IP3 { PARAM_VALUE.DST_IP3 } {
 	# Procedure called to validate DST_IP3
+	return true
+}
+
+proc update_PARAM_VALUE.FIFO_CLOCK_MODE { PARAM_VALUE.FIFO_CLOCK_MODE } {
+	# Procedure called to update FIFO_CLOCK_MODE when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.FIFO_CLOCK_MODE { PARAM_VALUE.FIFO_CLOCK_MODE } {
+	# Procedure called to validate FIFO_CLOCK_MODE
 	return true
 }
 
@@ -159,43 +167,20 @@ proc validate_PARAM_VALUE.SRC_MAC { PARAM_VALUE.SRC_MAC } {
 	return true
 }
 
-proc update_PARAM_VALUE.STREAM_WBITS { PARAM_VALUE.STREAM_WBITS } {
-	# Procedure called to update STREAM_WBITS when any of the dependent parameters in the arguments change
-}
 
-proc validate_PARAM_VALUE.STREAM_WBITS { PARAM_VALUE.STREAM_WBITS } {
-	# Procedure called to validate STREAM_WBITS
-	return true
-}
-
-proc update_PARAM_VALUE.STREAM_WBYTS { PARAM_VALUE.STREAM_WBYTS } {
-	# Procedure called to update STREAM_WBYTS when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.STREAM_WBYTS { PARAM_VALUE.STREAM_WBYTS } {
-	# Procedure called to validate STREAM_WBYTS
-	return true
-}
-
-
-proc update_MODELPARAM_VALUE.STREAM_WBYTS { MODELPARAM_VALUE.STREAM_WBYTS PARAM_VALUE.STREAM_WBYTS } {
+proc update_MODELPARAM_VALUE.DATA_WBITS { MODELPARAM_VALUE.DATA_WBITS PARAM_VALUE.DATA_WBITS } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.STREAM_WBYTS}] ${MODELPARAM_VALUE.STREAM_WBYTS}
-}
-
-proc update_MODELPARAM_VALUE.STREAM_WBITS { MODELPARAM_VALUE.STREAM_WBITS PARAM_VALUE.STREAM_WBITS } {
-	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.STREAM_WBITS}] ${MODELPARAM_VALUE.STREAM_WBITS}
-}
-
-proc update_MODELPARAM_VALUE.ADDR_WBYTS { MODELPARAM_VALUE.ADDR_WBYTS PARAM_VALUE.ADDR_WBYTS } {
-	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.ADDR_WBYTS}] ${MODELPARAM_VALUE.ADDR_WBYTS}
+	set_property value [get_property value ${PARAM_VALUE.DATA_WBITS}] ${MODELPARAM_VALUE.DATA_WBITS}
 }
 
 proc update_MODELPARAM_VALUE.ADDR_WBITS { MODELPARAM_VALUE.ADDR_WBITS PARAM_VALUE.ADDR_WBITS } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.ADDR_WBITS}] ${MODELPARAM_VALUE.ADDR_WBITS}
+}
+
+proc update_MODELPARAM_VALUE.FIFO_CLOCK_MODE { MODELPARAM_VALUE.FIFO_CLOCK_MODE PARAM_VALUE.FIFO_CLOCK_MODE } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.FIFO_CLOCK_MODE}] ${MODELPARAM_VALUE.FIFO_CLOCK_MODE}
 }
 
 proc update_MODELPARAM_VALUE.SRC_MAC { MODELPARAM_VALUE.SRC_MAC PARAM_VALUE.SRC_MAC } {
@@ -258,8 +243,8 @@ proc update_MODELPARAM_VALUE.MAX_PACKET_COUNT { MODELPARAM_VALUE.MAX_PACKET_COUN
 	set_property value [get_property value ${PARAM_VALUE.MAX_PACKET_COUNT}] ${MODELPARAM_VALUE.MAX_PACKET_COUNT}
 }
 
-proc update_MODELPARAM_VALUE.DATA_FIFO_SIZE { MODELPARAM_VALUE.DATA_FIFO_SIZE PARAM_VALUE.DATA_FIFO_SIZE } {
+proc update_MODELPARAM_VALUE.DATA_FIFO_DEPTH { MODELPARAM_VALUE.DATA_FIFO_DEPTH PARAM_VALUE.DATA_FIFO_DEPTH } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.DATA_FIFO_SIZE}] ${MODELPARAM_VALUE.DATA_FIFO_SIZE}
+	set_property value [get_property value ${PARAM_VALUE.DATA_FIFO_DEPTH}] ${MODELPARAM_VALUE.DATA_FIFO_DEPTH}
 }
 

@@ -85,7 +85,6 @@ void execute()
     
     string versionStr = Mindy.getRtlBuildStr();
     printf("RTL Build: %s\n", versionStr.c_str());
-    exit(1);
 
     // Ensure that both QSFP cables are connected
     if (Mindy.getQsfpStatus() != 3)
@@ -130,6 +129,10 @@ void execute()
     Mindy.setRemoteFrameCounterAddr(0xDCCCC1234);
 
     Mindy.clearLocalFrameCounters();
+
+    Mindy.incrementLocalFrameCounter(0);
+    Mindy.incrementLocalFrameCounter(0);
+    exit(1);
 
     // Do nothing for a few milliseconds
     usleep(100000);

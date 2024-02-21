@@ -18,6 +18,10 @@ module rdmx_shim_ctl
     output reg[63:0] RFD_ADDR, RFD_SIZE,
     output reg[63:0] RMD_ADDR, RMD_SIZE,
     output reg[63:0] RFC_ADDR,
+    
+    output reg[31:0] FRAME_SIZE,
+    output reg[15:0] PACKET_SIZE,
+    output reg[31:0] PACKETS_PER_GROUP,
 
     //================== This is an AXI4-Lite slave interface ==================
         
@@ -54,16 +58,19 @@ module rdmx_shim_ctl
 
 
 //=========================  AXI Register Map  =============================
-localparam REG_RFD_ADDR_H = 0;
-localparam REG_RFD_ADDR_L = 1;
-localparam REG_RFD_SIZE_H = 2;
-localparam REG_RFD_SIZE_L = 3;
-localparam REG_RMD_ADDR_H = 4;
-localparam REG_RMD_ADDR_L = 5;
-localparam REG_RMD_SIZE_H = 6;
-localparam REG_RMD_SIZE_L = 7;
-localparam REG_RFC_ADDR_H = 8;
-localparam REG_RFC_ADDR_L = 9;
+localparam REG_RFD_ADDR_H        =  0;
+localparam REG_RFD_ADDR_L        =  1;
+localparam REG_RFD_SIZE_H        =  2;
+localparam REG_RFD_SIZE_L        =  3;
+localparam REG_RMD_ADDR_H        =  4;
+localparam REG_RMD_ADDR_L        =  5;
+localparam REG_RMD_SIZE_H        =  6;
+localparam REG_RMD_SIZE_L        =  7;
+localparam REG_RFC_ADDR_H        =  8;
+localparam REG_RFC_ADDR_L        =  9;
+localparam REG_FRAME_SIZE        = 10;
+localparam REG_PACKET_SIZE       = 11;
+localparam REG_PACKETS_PER_GROUP = 12;
 //==========================================================================
 
 
@@ -81,7 +88,7 @@ wire        ashi_widle;     // Output: 1 = Write state machine is idle
 // AXI Slave Handler Interface for read requests
 wire[31:0]  ashi_rindx;     // Input   Read register-index
 wire[31:0]  ashi_raddr;     // Input:  Read-address
-wire        ashi_read;      // Input:  1 = Handle a read request
+wire        ashi_read;      // Input:  81 = Handle a read request
 reg[31:0]   ashi_rdata;     // Output: Read data
 reg[1:0]    ashi_rresp;     // Output: Read-response (OKAY, DECERR, SLVERR);
 wire        ashi_ridle;     // Output: 1 = Read state machine is idle
@@ -138,6 +145,10 @@ always @(posedge clk) begin
                     REG_RFC_ADDR_H : RFC_ADDR[63:32] <= ashi_wdata;
                     REG_RFC_ADDR_L : RFC_ADDR[31:00] <= ashi_wdata;
 
+                    REG_FRAME_SIZE       : FRAME_SIZE        <=ashi_wdata;
+                    REG_PACKET_SIZE      : PACKET_SIZE       <= ashi_wdata;
+                    REG_PACKETS_PER_GROUP: PACKETS_PER_GROUP <= ashi_wdata;
+
                     // Writes to any other register are a decode-error
                     default: ashi_wresp <= DECERR;
                 endcase
@@ -183,6 +194,9 @@ always @(posedge clk) begin
             REG_RFC_ADDR_H : ashi_rdata <= RFC_ADDR[63:32];
             REG_RFC_ADDR_L : ashi_rdata <= RFC_ADDR[31:00];
 
+            REG_FRAME_SIZE        : ashi_rdata <= FRAME_SIZE;       
+            REG_PACKET_SIZE       : ashi_rdata <= PACKET_SIZE;
+            REG_PACKETS_PER_GROUP : ashi_rdata <= PACKETS_PER_GROUP;
 
             // Reads of any other register are a decode-error
             default: ashi_rresp <= DECERR;

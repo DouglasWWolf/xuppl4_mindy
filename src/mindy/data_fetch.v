@@ -139,24 +139,15 @@ module data_fetch #
 
 
     //==========================================================================
-    // Meta-data gets emitted on both of these streams simultaneously
+    //           Output stream that mindy-core expects
     //==========================================================================
-    output [PCIE_BITS-1:0] AXIS_MD0_TDATA,    AXIS_MD1_TDATA,
-    output                 AXIS_MD0_TVALID,   AXIS_MD1_TVALID,
-    input                  AXIS_MD0_TREADY,   AXIS_MD1_TREADY,
-    //==========================================================================
-
-
-    //==========================================================================
-    // Frame-data gets emitted on this stream
-    //==========================================================================
-    output [PCIE_BITS-1:0] AXIS_FD_TDATA,
-    output                 AXIS_FD_TVALID,
-    input                  AXIS_FD_TREADY,
+    output  [PCIE_BITS-1:0] AXIS_OUT_TDATA,
+    output                  AXIS_OUT_TVALID,
+    input                   AXIS_OUT_TREADY,
     //==========================================================================
 
     // The number of bytes in a full-frame
-    output reg [31:0] FRAME_SIZE
+    input [31:0] FRAME_SIZE
 );  
 
 // Any time the register map of this module changes, this number should
@@ -190,7 +181,6 @@ localparam REG_HFD_BYTES_H  = 13;  // Host frame-data buffer, size in bytes
 localparam REG_HFD_BYTES_L  = 14;
 localparam REG_HMD_BYTES_H  = 15;  // Host meta-data buffer, size in bytes
 localparam REG_HMD_BYTES_L  = 16;
-localparam REG_FRAME_SIZE   = 17;  // # of bytes in a semiphase
 //=============================================================================
 
 
@@ -423,46 +413,13 @@ end
 
 
 
-
 //=============================================================================
-// This state machine receives data from the PCIe bus
+//  The output stream is fed directly from the R channel of M_AXI
 //=============================================================================
-reg[31:0] recv_counter;
-
-// Number of clock cycles per phase.  This represents one set of metadata, plus
-// frame data from two semi-phases
-wire[31:0] cycles_per_phase = (METADATA_BYTES + 2*semiphase_bytes)/PCIE_WIDTH;
-
-
-// Define on which clock-cycles we'll write to the meta-data output FIFOs
-wire axis_md_tvalid = (resetn == 1)
-                    & (M_AXI_RREADY & M_AXI_RVALID)
-                    & (recv_counter <= 2);
-
-wire axis_fd_tvalid = (resetn == 1)
-                    & (M_AXI_RREADY & M_AXI_RVALID)
-                    & (recv_counter > 2);
-
-// This is driven by the frame data FIFO
-wire axis_fd_tready;
-
-// We're always ready to receive data when the FIFO is ready to receive
-assign M_AXI_RREADY = (resetn == 1) & axis_fd_tready;
-//----------------------------------------------------------------------------
-always @(posedge clk) begin
-    if (resetn == 0) begin
-        recv_counter <= 1;
-
-    end else if (M_AXI_RREADY & M_AXI_RVALID) begin
-        if (recv_counter == cycles_per_phase)
-            recv_counter <= 1;
-        else
-            recv_counter <= recv_counter + 1;
-    end
-   
-end
+assign AXIS_OUT_TDATA  = M_AXI_RDATA;
+assign AXIS_OUT_TVALID = M_AXI_RVALID;
+assign M_AXI_RREADY    = AXIS_OUT_TREADY;
 //=============================================================================
-
 
 
 
@@ -514,8 +471,6 @@ always @(posedge clk) begin
                     REG_HMD_BYTES_H:    host_md_bytes[63:32] <= ashi_wdata;
                     REG_HMD_BYTES_L:    host_md_bytes[31:00] <= ashi_wdata;
 
-                    // Length of a frame (i.e., 2 semiphases), in bytes
-                    REG_FRAME_SIZE:     FRAME_SIZE <= ashi_wdata;
 
                     // Writes to any other register are a decode-error
                     default: ashi_wresp <= DECERR;
@@ -569,8 +524,6 @@ always @(posedge clk) begin
             REG_HFD_BYTES_L:    ashi_rdata <= host_fd_bytes[31:00];
             REG_HMD_BYTES_H:    ashi_rdata <= host_md_bytes[63:32];
             REG_HMD_BYTES_L:    ashi_rdata <= host_md_bytes[31:00];
-
-            REG_FRAME_SIZE:     ashi_rdata <= FRAME_SIZE;
 
             // Reads of any other register are a decode-error
             default: ashi_rresp <= DECERR;
@@ -631,191 +584,6 @@ axi4_lite_slave#(ADDR_MASK) axil_slave
     .ASHI_READ      (ashi_read ),
     .ASHI_RRESP     (ashi_rresp),
     .ASHI_RIDLE     (ashi_ridle)
-);
-//=============================================================================
-
-//=============================================================================
-// This FIFO holds outgoing meta-data
-//=============================================================================
-xpm_fifo_axis #
-(
-    .CLOCKING_MODE      ("common_clock"),
-    .PACKET_FIFO        ("false"),
-    .FIFO_DEPTH         (16),
-    .TDATA_WIDTH        (PCIE_BITS),
-    .TUSER_WIDTH        (1),
-    .FIFO_MEMORY_TYPE   ("distributed"),
-    .USE_ADV_FEATURES   ("0000")
-)
-md0_fifo
-(
-    // Clock and reset
-   .s_aclk          (clk   ),
-   .m_aclk          (clk   ),
-   .s_aresetn       (resetn),
-
-    // The input bus to the FIFO
-   .s_axis_tdata    (M_AXI_RDATA    ),
-   .s_axis_tvalid   (axis_md_tvalid ),
-   .s_axis_tready   (               ),
-   .s_axis_tuser    (               ),
-   .s_axis_tkeep    (               ),
-   .s_axis_tlast    (               ),
-
-
-    // The output bus of the FIFO
-   .m_axis_tdata    (AXIS_MD0_TDATA ),
-   .m_axis_tvalid   (AXIS_MD0_TVALID),
-   .m_axis_tready   (AXIS_MD0_TREADY),
-   .m_axis_tuser    (               ),
-   .m_axis_tkeep    (               ),
-   .m_axis_tlast    (               ),
-
-    // Unused input stream signals
-   .s_axis_tdest(),
-   .s_axis_tid  (),
-   .s_axis_tstrb(),
-
-    // Unused output stream signals
-   .m_axis_tdest(),
-   .m_axis_tid  (),
-   .m_axis_tstrb(),
-
-    // Other unused signals
-   .almost_empty_axis(),
-   .almost_full_axis(),
-   .dbiterr_axis(),
-   .prog_empty_axis(),
-   .prog_full_axis(),
-   .rd_data_count_axis(),
-   .sbiterr_axis(),
-   .wr_data_count_axis(),
-   .injectdbiterr_axis(),
-   .injectsbiterr_axis()
-);
-//=============================================================================
-
-
-//=============================================================================
-// This FIFO holds outgoing meta-data
-//=============================================================================
-xpm_fifo_axis #
-(
-    .CLOCKING_MODE      ("common_clock"),
-    .PACKET_FIFO        ("false"),
-    .FIFO_DEPTH         (16),
-    .TDATA_WIDTH        (PCIE_BITS),
-    .TUSER_WIDTH        (1),
-    .FIFO_MEMORY_TYPE   ("distributed"),
-    .USE_ADV_FEATURES   ("0000")
-)
-md1_fifo
-(
-    // Clock and reset
-   .s_aclk          (clk   ),
-   .m_aclk          (clk   ),
-   .s_aresetn       (resetn),
-
-    // The input bus to the FIFO
-   .s_axis_tdata    (M_AXI_RDATA    ),
-   .s_axis_tvalid   (axis_md_tvalid ),
-   .s_axis_tready   (               ),
-   .s_axis_tuser    (               ),
-   .s_axis_tkeep    (               ),
-   .s_axis_tlast    (               ),
-
-
-    // The output bus of the FIFO
-   .m_axis_tdata    (AXIS_MD1_TDATA ),
-   .m_axis_tvalid   (AXIS_MD1_TVALID),
-   .m_axis_tready   (AXIS_MD1_TREADY),
-   .m_axis_tuser    (               ),
-   .m_axis_tkeep    (               ),
-   .m_axis_tlast    (               ),
-
-    // Unused input stream signals
-   .s_axis_tdest(),
-   .s_axis_tid  (),
-   .s_axis_tstrb(),
-
-    // Unused output stream signals
-   .m_axis_tdest(),
-   .m_axis_tid  (),
-   .m_axis_tstrb(),
-
-    // Other unused signals
-   .almost_empty_axis(),
-   .almost_full_axis(),
-   .dbiterr_axis(),
-   .prog_empty_axis(),
-   .prog_full_axis(),
-   .rd_data_count_axis(),
-   .sbiterr_axis(),
-   .wr_data_count_axis(),
-   .injectdbiterr_axis(),
-   .injectsbiterr_axis()
-);
-//=============================================================================
-
- 
-//=============================================================================
-// This FIFO holds outgoing frame data
-//=============================================================================
-xpm_fifo_axis #
-(
-    .CLOCKING_MODE      ("common_clock"),
-    .PACKET_FIFO        ("false"),
-    .FIFO_DEPTH         (FD_FIFO_DEPTH),
-    .TDATA_WIDTH        (PCIE_BITS),
-    .TUSER_WIDTH        (1),
-    .FIFO_MEMORY_TYPE   (FD_FIFO_TYPE),
-    .USE_ADV_FEATURES   ("0000")
-)
-fd_fifo
-(
-    // Clock and reset
-   .s_aclk          (clk   ),
-   .m_aclk          (clk   ),
-   .s_aresetn       (resetn),
-
-    // The input bus to the FIFO
-   .s_axis_tdata    (M_AXI_RDATA   ),
-   .s_axis_tvalid   (axis_fd_tvalid),
-   .s_axis_tready   (axis_fd_tready),
-   .s_axis_tuser    (              ),
-   .s_axis_tkeep    (              ),
-   .s_axis_tlast    (              ),
-
-
-    // The output bus of the FIFO
-   .m_axis_tdata    (AXIS_FD_TDATA ),
-   .m_axis_tvalid   (AXIS_FD_TVALID),
-   .m_axis_tready   (AXIS_FD_TREADY),
-   .m_axis_tuser    (              ),
-   .m_axis_tkeep    (              ),
-   .m_axis_tlast    (              ),
-
-    // Unused input stream signals
-   .s_axis_tdest(),
-   .s_axis_tid  (),
-   .s_axis_tstrb(),
-
-    // Unused output stream signals
-   .m_axis_tdest(),
-   .m_axis_tid  (),
-   .m_axis_tstrb(),
-
-    // Other unused signals
-   .almost_empty_axis(),
-   .almost_full_axis(),
-   .dbiterr_axis(),
-   .prog_empty_axis(),
-   .prog_full_axis(),
-   .rd_data_count_axis(),
-   .sbiterr_axis(),
-   .wr_data_count_axis(),
-   .injectdbiterr_axis(),
-   .injectsbiterr_axis()
 );
 //=============================================================================
 

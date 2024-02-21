@@ -39,25 +39,24 @@ const uint32_t  REG_HFD_BYTES_H = DF_BASE + 13*4;
 const uint32_t  REG_HFD_BYTES_L = DF_BASE + 14*4;
 const uint32_t  REG_HMD_BYTES_H = DF_BASE + 15*4;
 const uint32_t  REG_HMD_BYTES_L = DF_BASE + 16*4;
-const uint32_t   REG_FRAME_SIZE = DF_BASE + 17*4;
 
-// Registers in the "ping ponger" module
-const uint32_t PP_BASE = 0x3000;
-const uint32_t       REG_PACKET_SIZE = PP_BASE + 0*4;
-const uint32_t REG_PACKETS_PER_GROUP = PP_BASE + 1*4;
 
 // Registers in the "RDMX shim" module
 const uint32_t RS_BASE = 0x4000;
-const uint32_t REG_RFD_ADDR_H = RS_BASE + 0*4;
-const uint32_t REG_RFD_ADDR_L = RS_BASE + 1*4;
-const uint32_t REG_RFD_SIZE_H = RS_BASE + 2*4;
-const uint32_t REG_RFD_SIZE_L = RS_BASE + 3*4;
-const uint32_t REG_RMD_ADDR_H = RS_BASE + 4*4;
-const uint32_t REG_RMD_ADDR_L = RS_BASE + 5*4;
-const uint32_t REG_RMD_SIZE_H = RS_BASE + 6*4;
-const uint32_t REG_RMD_SIZE_L = RS_BASE + 7*4;
-const uint32_t REG_RFC_ADDR_H = RS_BASE + 8*4;
-const uint32_t REG_RFC_ADDR_L = RS_BASE + 9*4;
+const uint32_t REG_RFD_ADDR_H        = RS_BASE +  0*4;
+const uint32_t REG_RFD_ADDR_L        = RS_BASE +  1*4;
+const uint32_t REG_RFD_SIZE_H        = RS_BASE +  2*4;
+const uint32_t REG_RFD_SIZE_L        = RS_BASE +  3*4;
+const uint32_t REG_RMD_ADDR_H        = RS_BASE +  4*4;
+const uint32_t REG_RMD_ADDR_L        = RS_BASE +  5*4;
+const uint32_t REG_RMD_SIZE_H        = RS_BASE +  6*4;
+const uint32_t REG_RMD_SIZE_L        = RS_BASE +  7*4;
+const uint32_t REG_RFC_ADDR_H        = RS_BASE +  8*4;
+const uint32_t REG_RFC_ADDR_L        = RS_BASE +  9*4;
+const uint32_t REG_FRAME_SIZE        = RS_BASE + 10*4;
+const uint32_t REG_PACKET_SIZE       = RS_BASE + 11*4;
+const uint32_t REG_PACKETS_PER_GROUP = RS_BASE + 12*4;
+
 
 // Registers in the "status manager" module
 const uint32_t SM_BASE = 0x5000;
