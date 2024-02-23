@@ -46,14 +46,14 @@ preplace netloc source_200Mhz_clk 1 0 4 40 210 380 450 780 540 1100
 preplace netloc AXIS_IN 1 0 1 NJ 70
 preplace netloc AXIS_MD0 1 1 2 NJ 70 N
 preplace netloc AXIS_MD1 1 1 2 NJ 90 N
+preplace netloc AXIS_MD_IN_1 1 0 1 NJ 90
+preplace netloc mindy_if_AXIS_FD_OUT 1 1 1 N 150
 preplace netloc ping_ponger_AXIS_OUT0 1 2 1 N 150
 preplace netloc ping_ponger_AXIS_OUT1 1 2 1 N 170
 preplace netloc rdmx_shim_M_AXI_0 1 3 1 N 70
 preplace netloc rdmx_shim_M_AXI_1 1 3 1 N 210
 preplace netloc rdmx_xmit_0_AXIS_TX 1 4 1 NJ 70
 preplace netloc rdmx_xmit_1_AXIS_TX 1 4 1 NJ 210
-preplace netloc mindy_if_AXIS_FD_OUT 1 1 1 N 150
-preplace netloc AXIS_MD_IN_1 1 0 1 NJ 90
 levelinfo -pg 1 0 200 590 930 1260 1440
 pagesize -pg 1 -db -bbox -sgen -260 0 1560 550
 ",

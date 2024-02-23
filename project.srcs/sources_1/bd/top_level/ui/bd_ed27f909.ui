@@ -9,24 +9,23 @@
 #  -string -flagsOSRD
 preplace port M_AXI_B -pg 1 -lvl 3 -x 730 -y 280 -defaultsOSRD
 preplace port pcie_mgt -pg 1 -lvl 3 -x 730 -y 300 -defaultsOSRD
-preplace port pcie_refclk -pg 1 -lvl 0 -x 0 -y 440 -defaultsOSRD
+preplace port pcie_refclk -pg 1 -lvl 0 -x 0 -y 400 -defaultsOSRD
 preplace port S_AXI_B -pg 1 -lvl 3 -x 730 -y 320 -defaultsOSRD -right
 preplace port port-id_led_pcie_link_up -pg 1 -lvl 3 -x 730 -y 380 -defaultsOSRD
 preplace port port-id_axi_aclk -pg 1 -lvl 3 -x 730 -y 60 -defaultsOSRD
-preplace port port-id_axi_aresetn1 -pg 1 -lvl 3 -x 730 -y 180 -defaultsOSRD
 preplace portBus axi_aresetn -pg 1 -lvl 3 -x 730 -y 80 -defaultsOSRD
 preplace inst reset_extender -pg 1 -lvl 2 -x 510 -y 60 -swap {0 9 2 3 4 5 6 7 8 1} -defaultsOSRD -pinDir slowest_sync_clk right -pinY slowest_sync_clk 0R -pinDir ext_reset_in right -pinY ext_reset_in 120R -pinDir aux_reset_in left -pinY aux_reset_in 0L -pinDir mb_debug_sys_rst left -pinY mb_debug_sys_rst 20L -pinDir dcm_locked left -pinY dcm_locked 40L -pinDir mb_reset right -pinY mb_reset 40R -pinBusDir bus_struct_reset right -pinBusY bus_struct_reset 60R -pinBusDir peripheral_reset right -pinBusY peripheral_reset 80R -pinBusDir interconnect_aresetn right -pinBusY interconnect_aresetn 100R -pinBusDir peripheral_aresetn right -pinBusY peripheral_aresetn 20R
-preplace inst bridge_input_clock -pg 1 -lvl 1 -x 170 -y 440 -swap {0 1 2 4 3} -defaultsOSRD -pinDir CLK_IN_D left -pinY CLK_IN_D 0L -pinBusDir IBUF_OUT right -pinBusY IBUF_OUT 20R -pinBusDir IBUF_DS_ODIV2 right -pinBusY IBUF_DS_ODIV2 0R
-preplace inst pcie_bridge -pg 1 -lvl 2 -x 510 -y 280 -swap {88 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 0 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 32 89 90 91 92 94 95 93 99 98 96 97 100 101 102 103 104 105} -defaultsOSRD -pinDir S_AXI_B right -pinY S_AXI_B 40R -pinDir M_AXI_B right -pinY M_AXI_B 0R -pinDir S_AXI_LITE left -pinY S_AXI_LITE 0L -pinDir pcie_mgt right -pinY pcie_mgt 20R -pinDir sys_clk left -pinY sys_clk 160L -pinDir sys_clk_gt left -pinY sys_clk_gt 180L -pinDir sys_rst_n left -pinY sys_rst_n 60L -pinBusDir cfg_ltssm_state right -pinBusY cfg_ltssm_state 120R -pinDir user_lnk_up right -pinY user_lnk_up 100R -pinDir axi_aclk right -pinY axi_aclk 60R -pinDir axi_aresetn right -pinY axi_aresetn 80R -pinDir axi_ctl_aresetn right -pinY axi_ctl_aresetn 140R -pinBusDir usr_irq_req left -pinBusY usr_irq_req 200L -pinBusDir usr_irq_ack right -pinBusY usr_irq_ack 160R -pinDir msi_enable right -pinY msi_enable 180R -pinBusDir msi_vector_width right -pinBusY msi_vector_width 200R -pinDir interrupt_out right -pinY interrupt_out 220R
-preplace inst one -pg 1 -lvl 1 -x 170 -y 340 -defaultsOSRD -pinBusDir dout right -pinBusY dout 0R
-preplace netloc bridge_input_clock_IBUF_DS_ODIV2 1 1 1 N 440
-preplace netloc bridge_input_clock_IBUF_OUT 1 1 1 N 460
-preplace netloc one_dout 1 1 1 NJ 340
+preplace inst bridge_input_clock -pg 1 -lvl 1 -x 170 -y 400 -swap {0 1 2 4 3} -defaultsOSRD -pinDir CLK_IN_D left -pinY CLK_IN_D 0L -pinBusDir IBUF_OUT right -pinBusY IBUF_OUT 20R -pinBusDir IBUF_DS_ODIV2 right -pinBusY IBUF_DS_ODIV2 0R
+preplace inst pcie_bridge -pg 1 -lvl 2 -x 510 -y 280 -swap {88 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 0 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 32 89 90 91 92 94 95 93 99 98 97 96 100 101 102 103 104 105} -defaultsOSRD -pinDir S_AXI_B right -pinY S_AXI_B 40R -pinDir M_AXI_B right -pinY M_AXI_B 0R -pinDir S_AXI_LITE left -pinY S_AXI_LITE 0L -pinDir pcie_mgt right -pinY pcie_mgt 20R -pinDir sys_clk left -pinY sys_clk 120L -pinDir sys_clk_gt left -pinY sys_clk_gt 140L -pinDir sys_rst_n left -pinY sys_rst_n 20L -pinBusDir cfg_ltssm_state right -pinBusY cfg_ltssm_state 120R -pinDir user_lnk_up right -pinY user_lnk_up 100R -pinDir axi_aclk right -pinY axi_aclk 80R -pinDir axi_aresetn right -pinY axi_aresetn 60R -pinDir axi_ctl_aresetn right -pinY axi_ctl_aresetn 140R -pinBusDir usr_irq_req left -pinBusY usr_irq_req 160L -pinBusDir usr_irq_ack right -pinBusY usr_irq_ack 160R -pinDir msi_enable right -pinY msi_enable 180R -pinBusDir msi_vector_width right -pinBusY msi_vector_width 200R -pinDir interrupt_out right -pinY interrupt_out 220R
+preplace inst one -pg 1 -lvl 1 -x 170 -y 300 -defaultsOSRD -pinBusDir dout right -pinBusY dout 0R
+preplace netloc bridge_input_clock_IBUF_DS_ODIV2 1 1 1 N 400
+preplace netloc bridge_input_clock_IBUF_OUT 1 1 1 N 420
+preplace netloc one_dout 1 1 1 NJ 300
 preplace netloc pcie_bridge_axi_aresetn 1 2 1 690 180n
 preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 1 NJ 80
 preplace netloc xdma_0_axi_aclk 1 2 1 710 60n
 preplace netloc xdma_0_user_lnk_up 1 2 1 NJ 380
-preplace netloc Conn1 1 0 1 NJ 440
+preplace netloc Conn1 1 0 1 NJ 400
 preplace netloc Conn2 1 2 1 N 320
 preplace netloc xdma_0_M_AXI_B 1 2 1 NJ 280
 preplace netloc xdma_0_pcie_mgt 1 2 1 NJ 300
@@ -34,7 +33,7 @@ levelinfo -pg 1 0 170 510 730
 pagesize -pg 1 -db -bbox -sgen -130 0 900 560
 ",
    "No Loops_ScaleFactor":"1.0",
-   "No Loops_TopLeft":"-263,-104",
+   "No Loops_TopLeft":"-263,-118",
    "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
 preplace port M_AXI_B -pg 1 -lvl 4 -x 900 -y 80 -defaultsOSRD
