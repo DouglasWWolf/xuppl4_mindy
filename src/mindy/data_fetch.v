@@ -27,8 +27,7 @@
         command
 
     (3) When the requested data arrives, push the frame data out the AXIS_FD
-        stream, and the meta-data out the two AXIS_MD streams.  Those two
-        AXIS_MD streams carry identical output data.
+        stream, and the meta-data out the AXIS_MD stream.
 
     When data is fetched from the PCIe bus and written to the AXIS_FD, it is
     intentionally stripped of its RLAST/TLAST bits.   The downstream module
@@ -139,12 +138,21 @@ module data_fetch #
 
 
     //==========================================================================
-    //           Output stream that mindy-core expects
+    //             Frame-data output stream that mindy-core expects
     //==========================================================================
-    output  [PCIE_BITS-1:0] AXIS_OUT_TDATA,
-    output                  AXIS_OUT_TVALID,
-    input                   AXIS_OUT_TREADY,
+    output  [PCIE_BITS-1:0] AXIS_FD_OUT_TDATA,
+    output                  AXIS_FD_OUT_TVALID,
+    input                   AXIS_FD_OUT_TREADY,
     //==========================================================================
+
+    //==========================================================================
+    //             Meta-data output stream that mindy-core expects
+    //==========================================================================
+    output  [PCIE_BITS-1:0] AXIS_MD_OUT_TDATA,
+    output                  AXIS_MD_OUT_TVALID,
+    input                   AXIS_MD_OUT_TREADY,
+    //==========================================================================
+
 
     // The number of bytes in a full-frame
     input [31:0] FRAME_SIZE
@@ -260,8 +268,14 @@ wire[63:0] hmd_ptr[0:1];
 assign hmd_ptr[0] = host_md_addr[0] + hmd_offs[0];
 assign hmd_ptr[1] = host_md_addr[1] + hmd_offs[1];
 
+// How many AXI transactions will it take to fetch an entire phase?
+wire[31:0] bursts_per_phase = FRAME_SIZE / AXI_BURST_SIZE;
+
 // How many AXI transactions will it take to fetch an entire semiphase?
-wire[31:0] bursts_per_semiphase = semiphase_bytes / AXI_BURST_SIZE;
+wire[31:0] bursts_per_semiphase = bursts_per_phase / 2;
+
+// The number of data-cycles required by an entire frame (1 phase) of frame data
+wire[31:0] cycles_per_frame = FRAME_SIZE / (PCIE_BITS/8);
 
 //=============================================================================
 // This block provides a mechanism for incrementing the host RAM pointers
@@ -414,11 +428,45 @@ end
 
 
 //=============================================================================
-//  The output stream is fed directly from the R channel of M_AXI
+// The output frame-data and meta-data output streams are directly connected
+// to the R-channel of the M_AXI interface
 //=============================================================================
-assign AXIS_OUT_TDATA  = M_AXI_RDATA;
-assign AXIS_OUT_TVALID = M_AXI_RVALID;
-assign M_AXI_RREADY    = AXIS_OUT_TREADY;
+
+// The number of data-cycles for a full frame *including meta-data*
+wire[31:0] cycles_per_fd_plus_md = cycles_per_frame + 2;
+
+// As cycles of data arrive on the R-channel of M_AXI, this continuously counts
+// from 1 to "cycles_per_fd_plus_md"
+reg[31:0] output_cycle;
+
+// Is the data we're currently receiving metadata?
+wire is_metadata = (output_cycle <= 2);
+
+// Tie TDATA and TVALID of the output streams to M_AXI's R-channel
+assign AXIS_MD_OUT_TDATA  = (is_metadata == 1) ? M_AXI_RDATA : 0;
+assign AXIS_FD_OUT_TDATA  = (is_metadata == 0) ? M_AXI_RDATA : 0;
+assign AXIS_MD_OUT_TVALID = M_AXI_RVALID &  is_metadata;
+assign AXIS_FD_OUT_TVALID = M_AXI_RVALID & ~is_metadata;
+
+// Tell M_AXI that we're ready to receive when the appropriate output
+// stream is ready to receive
+assign M_AXI_RREADY = (resetn == 1)
+                    & (is_metadata ? AXIS_MD_OUT_TREADY : AXIS_FD_OUT_TREADY);
+
+//-----------------------------------------------------------------------------
+// Here we count arriving data cycles, with "output_cycle" counting 
+// continuously from 1 to "cycles_per_fd_plus_md"
+//-----------------------------------------------------------------------------
+always @(posedge clk) begin
+    if (resetn == 0)
+        output_cycle <= 1;
+    else if (M_AXI_RVALID & M_AXI_RREADY) begin
+        if (output_cycle == cycles_per_fd_plus_md)
+            output_cycle <= 1;
+        else
+            output_cycle <= output_cycle + 1;
+    end
+end
 //=============================================================================
 
 
@@ -470,7 +518,6 @@ always @(posedge clk) begin
                     // Meta-data ring-buffer size in bytes
                     REG_HMD_BYTES_H:    host_md_bytes[63:32] <= ashi_wdata;
                     REG_HMD_BYTES_L:    host_md_bytes[31:00] <= ashi_wdata;
-
 
                     // Writes to any other register are a decode-error
                     default: ashi_wresp <= DECERR;
@@ -586,8 +633,6 @@ axi4_lite_slave#(ADDR_MASK) axil_slave
     .ASHI_RIDLE     (ashi_ridle)
 );
 //=============================================================================
-
-
 
 
 endmodule

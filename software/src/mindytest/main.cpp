@@ -109,7 +109,7 @@ void execute()
     Mindy.setHostMetaDataSize(512);
 
     // A data frame is 64K
-    Mindy.setFrameSize(0x10000);
+    Mindy.setFrameSize(8192);
 
     // Packet size is 4K
     Mindy.setPacketSize(4096);
@@ -130,9 +130,6 @@ void execute()
 
     Mindy.clearLocalFrameCounters();
 
-    Mindy.incrementLocalFrameCounter(0);
-    Mindy.incrementLocalFrameCounter(0);
-    exit(1);
 
     // Do nothing for a few milliseconds
     usleep(100000);
