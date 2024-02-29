@@ -6,7 +6,7 @@
 //
 //   Date     Who   Ver  Changes
 //====================================================================================
-// 30-Nov-23  DWW     1  Initial creation
+// 29-Feb-24  DWW     2  Fixed bug with the meta-data registers being too small
 //====================================================================================
 
 
@@ -140,7 +140,7 @@ localparam FSM_OUTPUT_MD2  = 4;
 localparam FSM_OUTPUT_FC   = 5;
 
 // 128 bytes of metadata
-reg[63:0] metadata[0:1];
+reg[DATA_WBITS-1:0] metadata[0:1];
 
 // Create a byte-swapped version of the data on the input stream
 //wire[DATA_WBITS-1:0] AXIS_FD_tdata_swapped;
