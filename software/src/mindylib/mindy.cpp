@@ -150,6 +150,9 @@ void CMindy::init(string pcieID)
     // Fetch the userspace address of the first BAR
     BAR0_ = PCI.resourceList()[0].baseAddr;
 
+    // Fetch the PCI address of the first BAR
+    PCI0_ = PCI.resourceList()[0].physAddr;
+
     // If it looks like we need a hot-reset, do so
     if (read32(REG_BUILD_MAJOR) == 0xFFFFFFFF) PCI.hotReset(pcieID);
 
@@ -490,6 +493,21 @@ uint32_t CMindy::getLocalFrameCounter(uint32_t phase)
     return 0;
 }
 //=================================================================================================    
+
+
+//=================================================================================================    
+// getFrameCounterPciAddress() - Returns the PCI address of the frame-counter that corresponds to
+//                               the specified phase.
+//=================================================================================================    
+uint64_t CMindy::getFrameCounterPciAddress(uint32_t phase)
+{
+    if (phase == 0) return PCI0_ + REG_FC0;
+    if (phase == 1) return PCI0_ + REG_FC1;
+    throwRuntime("bad parameter on getFrameCounterPciAddress()");
+    return 0;
+}
+//=================================================================================================    
+
 
 
 //=================================================================================================    
