@@ -239,7 +239,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>2b5ad212</spirit:value>
+            <spirit:value>24fe1318</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -252,7 +252,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>2b5ad212</spirit:value>
+            <spirit:value>24fe1318</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -293,7 +293,7 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>qsfp0_status</spirit:name>
+        <spirit:name>qsfp0_status_async</spirit:name>
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:wireTypeDefs>
@@ -306,7 +306,7 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>qsfp1_status</spirit:name>
+        <spirit:name>qsfp1_status_async</spirit:name>
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:wireTypeDefs>
@@ -735,7 +735,7 @@
         <xilinx:designToolContext>IPI</xilinx:designToolContext>
       </xilinx:designToolContexts>
       <xilinx:coreRevision>1</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2024-02-19T06:58:49Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2024-03-24T03:02:05Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2021.1</xilinx:xilinxVersion>

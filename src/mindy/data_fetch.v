@@ -226,7 +226,7 @@ localparam DECERR = 3;
 
 // An AXI slave is gauranteed a minimum of 128 bytes of address space
 // (128 bytes is 32 32-bit registers)
-localparam ADDR_MASK = 7'h7F;
+localparam ADDR_MASK = 7'hFF;
 
 // Input-command state machine
 reg[2:0] icsm_state;
@@ -489,7 +489,7 @@ always @(posedge clk) begin
        
                 // Assume for the moment that the result will be OKAY
                 ashi_wresp <= OKAY;              
-            
+
                 // Convert the byte address into a register index
                 case (ashi_windx)
                

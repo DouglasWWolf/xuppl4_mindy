@@ -18,7 +18,7 @@ module status_mgr # (parameter FREQ_HZ = 250000000)
     input   clk, resetn,
 
     // The "up and aligned" status of the two QSFP ports
-    input   qsfp0_status, qsfp1_status,
+    input   qsfp0_status_async, qsfp1_status_async,
 
     // Asserted on any cycle when frame-counter command fifo overflows
     input   fc_overflow,
@@ -103,6 +103,12 @@ localparam DECERR = 3;
 // (128 bytes is 32 32-bit registers)
 localparam ADDR_MASK = 7'h7F;
 
+// Create versions of the qsfp<n>_status that are synchronous to "clk"
+wire qsfp0_status, qsfp1_status;
+cdc_single u_cdc0(qsfp0_status_async, clk, qsfp0_status);
+cdc_single u_cdc1(qsfp1_status_async, clk, qsfp1_status);
+
+// These are the active-high versions of the signals that will drive LEDs
 reg[3:0] orang, green;
 
 // The LEDs are active low
