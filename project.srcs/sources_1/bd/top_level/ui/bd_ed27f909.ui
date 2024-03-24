@@ -28,9 +28,9 @@ preplace netloc pcie_bridge_axi_aresetn 1 2 1 730 160n
 preplace netloc proc_sys_reset_0_peripheral_aresetn 1 1 2 360J 220 750
 preplace netloc xdma_0_axi_aclk 1 1 2 320 620 750
 preplace netloc xdma_0_user_lnk_up 1 2 1 NJ 340
+preplace netloc ABM_AXI 1 0 1 20 320n
 preplace netloc Conn1 1 0 1 NJ 540
 preplace netloc Conn2 1 0 1 NJ 300
-preplace netloc ABM_AXI 1 0 1 20 320n
 preplace netloc axi_crossbar_M00_AXI 1 1 1 N 280
 preplace netloc xdma_0_M_AXI_B 1 2 1 NJ 280
 preplace netloc xdma_0_pcie_mgt 1 2 1 NJ 300
@@ -38,7 +38,7 @@ levelinfo -pg 1 0 170 550 770
 pagesize -pg 1 -db -bbox -sgen -130 0 940 630
 ",
    "No Loops_ScaleFactor":"1.0",
-   "No Loops_TopLeft":"-246,-21",
+   "No Loops_TopLeft":"-246,-35",
    "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
 preplace port M_AXI_B -pg 1 -lvl 4 -x 900 -y 80 -defaultsOSRD

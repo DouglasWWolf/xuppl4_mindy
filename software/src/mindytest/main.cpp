@@ -93,6 +93,7 @@ void execute()
         exit(1);        
     }
 
+    Mindy.setHostAbmAddr(0x100000000LL);
 
     Mindy.setHostFrameDataAddr(0,0,0x100000000LL);
     Mindy.setHostFrameDataAddr(0,1,0x110000000LL);
@@ -108,8 +109,8 @@ void execute()
     // Meta data buffers are 512 bytes
     Mindy.setHostMetaDataSize(512);
 
-    // A data frame is 64K
-    Mindy.setFrameSize(8192);
+    // A data frame is 16K
+    Mindy.setFrameSize(16384);
 
     // Packet size is 4K
     Mindy.setPacketSize(4096);

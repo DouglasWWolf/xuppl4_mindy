@@ -60,7 +60,6 @@
         "sdp_ram_if_1": ""
       },
       "data_mover": "",
-      "xlconstant_0": "",
       "axi_revision": "",
       "eth_0": {
         "cmac_control": "",
@@ -379,6 +378,15 @@
                 "value": "1"
               },
               "NUM_SI": {
+                "value": "2"
+              },
+              "S00_ARB_PRIORITY": {
+                "value": "15"
+              },
+              "S01_ARB_PRIORITY": {
+                "value": "1"
+              },
+              "STRATEGY": {
                 "value": "2"
               }
             },
@@ -1791,7 +1799,7 @@
             "type": "rst",
             "direction": "I"
           },
-          "fifo_overflow": {
+          "fc_overflow": {
             "direction": "O"
           },
           "resetn_out": {
@@ -1801,6 +1809,11 @@
           "FRAME_SIZE": {
             "direction": "I",
             "left": "31",
+            "right": "0"
+          },
+          "host_abm_addr": {
+            "direction": "O",
+            "left": "63",
             "right": "0"
           }
         },
@@ -2928,6 +2941,11 @@
                   }
                 }
               },
+              "host_abm_addr": {
+                "direction": "O",
+                "left": "63",
+                "right": "0"
+              },
               "FRAME_SIZE": {
                 "direction": "I",
                 "left": "31",
@@ -2984,6 +3002,12 @@
           }
         },
         "nets": {
+          "data_fetch_host_abm_addr": {
+            "ports": [
+              "data_fetch/host_abm_addr",
+              "host_abm_addr"
+            ]
+          },
           "frame_counters_external_resetn": {
             "ports": [
               "frame_counters/external_resetn",
@@ -2994,7 +3018,7 @@
           "frame_counters_fifo_overflow": {
             "ports": [
               "frame_counters/fifo_overflow",
-              "fifo_overflow"
+              "fc_overflow"
             ]
           },
           "mindy_FRAME_SIZE": {
@@ -6396,30 +6420,30 @@
               "mindy_core/AXIS_MD_IN"
             ]
           },
-          "S_AXI_RS_1": {
-            "interface_ports": [
-              "S_AXI_RS",
-              "rdmx_shim_ctl/S_AXI"
-            ]
-          },
-          "axis_tx_1": {
+          "ETH0_TX": {
             "interface_ports": [
               "ETH0_TX",
               "mindy_core/ETH0_TX",
               "tx0_ila/SLOT_0_AXIS"
             ]
           },
-          "data_fetch_AXIS_OUT": {
-            "interface_ports": [
-              "AXIS_FD_IN",
-              "mindy_core/AXIS_FD_IN"
-            ]
-          },
-          "mindy_ETH1_TX": {
+          "ETH1_TX": {
             "interface_ports": [
               "ETH1_TX",
               "mindy_core/ETH1_TX",
               "tx1_ila/SLOT_0_AXIS"
+            ]
+          },
+          "S_AXI_RS_1": {
+            "interface_ports": [
+              "S_AXI_RS",
+              "rdmx_shim_ctl/S_AXI"
+            ]
+          },
+          "data_fetch_AXIS_OUT": {
+            "interface_ports": [
+              "AXIS_FD_IN",
+              "mindy_core/AXIS_FD_IN"
             ]
           }
         },
@@ -8348,20 +8372,6 @@
           }
         }
       },
-      "xlconstant_0": {
-        "vlnv": "xilinx.com:ip:xlconstant:1.1",
-        "xci_name": "top_level_xlconstant_0_1",
-        "xci_path": "ip/top_level_xlconstant_0_1/top_level_xlconstant_0_1.xci",
-        "inst_hier_path": "xlconstant_0",
-        "parameters": {
-          "CONST_VAL": {
-            "value": "0x100000000"
-          },
-          "CONST_WIDTH": {
-            "value": "64"
-          }
-        }
-      },
       "axi_revision": {
         "vlnv": "xilinx.com:module_ref:axi_revision:1.0",
         "xci_name": "top_level_axi_revision_0_0",
@@ -10122,6 +10132,12 @@
           "data_mover/start"
         ]
       },
+      "data_fetch_host_abm_addr": {
+        "ports": [
+          "data_fetch/host_abm_addr",
+          "data_mover/dest_address"
+        ]
+      },
       "eth0_clk_1": {
         "ports": [
           "eth_0/stream_clk",
@@ -10156,7 +10172,7 @@
       },
       "frame_counters_fifo_overflow": {
         "ports": [
-          "data_fetch/fifo_overflow",
+          "data_fetch/fc_overflow",
           "status_manager/fc_overflow"
         ]
       },
@@ -10201,12 +10217,6 @@
         "ports": [
           "status_manager/led_orang_l",
           "led_orange_l"
-        ]
-      },
-      "xlconstant_0_dout": {
-        "ports": [
-          "xlconstant_0/dout",
-          "data_mover/dest_address"
         ]
       }
     },

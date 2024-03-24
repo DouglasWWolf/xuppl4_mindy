@@ -25,9 +25,9 @@ preplace netloc sdp_ram_if_0_dob 1 1 1 N 100
 preplace netloc sdp_ram_if_0_last_word_written 1 0 1 60 120n
 preplace netloc sdp_ram_if_1_dob 1 1 1 N 440
 preplace netloc sdp_ram_if_1_last_word_written 1 0 1 60 300n
+preplace netloc Conn1 1 0 1 N 60
 preplace netloc S_AXI_ABM_1 1 2 1 N 100
 preplace netloc S_AXI_RAM1_1 1 0 1 NJ 420
-preplace netloc Conn1 1 0 1 N 60
 levelinfo -pg 1 0 220 550 720
 pagesize -pg 1 -db -bbox -sgen -140 0 850 540
 ",

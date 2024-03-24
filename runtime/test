@@ -1,6 +1,8 @@
 source "mindy_api.sh"
 
-set +x
+# Set the location of the ABM buffer in host-RAM
+write_reg64 $REG_ABM_ADDR_H  0x1_0000_0000
+
 # Set the locations of the host frame data buffers
 write_reg64 $REG_HFD00_ADDR_H 0x0_0000_0000
 write_reg64 $REG_HFD01_ADDR_H 0x1_0000_0000
@@ -25,7 +27,6 @@ pcireg $REG_PACKET_SIZE 512
 
 # Number of packets in a ping-pong group
 pcireg $REG_PACKETS_PER_GROUP 2
-
 
 # Location and size of the frame-data ring buffer on the receiver
 write_reg64 $REG_RFD_ADDR_H 0x8_0000_0000

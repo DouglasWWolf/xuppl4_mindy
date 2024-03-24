@@ -44,6 +44,9 @@ module data_fetch #
 (
     input clk, resetn,
 
+    // The address of the ABM buffer on the host
+    output reg[63:0] host_abm_addr,
+
     //================== This is an AXI4-Lite slave interface ==================
         
     // "Specify write address"              -- Master --    -- Slave --
@@ -189,6 +192,8 @@ localparam REG_HFD_BYTES_H  = 13;  // Host frame-data buffer, size in bytes
 localparam REG_HFD_BYTES_L  = 14;
 localparam REG_HMD_BYTES_H  = 15;  // Host meta-data buffer, size in bytes
 localparam REG_HMD_BYTES_L  = 16;
+localparam REG_ABM_ADDR_H   = 17;  // Host ABM buffer
+localparam REG_ABM_ADDR_L   = 18;
 //=============================================================================
 
 
@@ -519,6 +524,10 @@ always @(posedge clk) begin
                     REG_HMD_BYTES_H:    host_md_bytes[63:32] <= ashi_wdata;
                     REG_HMD_BYTES_L:    host_md_bytes[31:00] <= ashi_wdata;
 
+                    // Address of the ABM in Host-RAM
+                    REG_ABM_ADDR_H:     host_abm_addr[63:32] <= ashi_wdata;
+                    REG_ABM_ADDR_L:     host_abm_addr[31:00] <= ashi_wdata;
+
                     // Writes to any other register are a decode-error
                     default: ashi_wresp <= DECERR;
                 endcase
@@ -571,6 +580,9 @@ always @(posedge clk) begin
             REG_HFD_BYTES_L:    ashi_rdata <= host_fd_bytes[31:00];
             REG_HMD_BYTES_H:    ashi_rdata <= host_md_bytes[63:32];
             REG_HMD_BYTES_L:    ashi_rdata <= host_md_bytes[31:00];
+
+            REG_ABM_ADDR_H:     ashi_rdata <= host_abm_addr[63:32];
+            REG_ABM_ADDR_L:     ashi_rdata <= host_abm_addr[31:00];
 
             // Reads of any other register are a decode-error
             default: ashi_rresp <= DECERR;

@@ -39,14 +39,14 @@ preplace netloc rdmx_shim_ctl_RMD_SIZE 1 1 1 N 190
 preplace netloc source_200Mhz_clk 1 0 2 20 110 NJ
 preplace netloc AXIS_MD_IN_1 1 0 2 NJ 90 NJ
 preplace netloc S_AXI_RS_1 1 0 1 NJ 190
-preplace netloc axis_tx_1 1 2 2 760 20 NJ
+preplace netloc ETH0_TX 1 2 2 760 20 NJ
 preplace netloc data_fetch_AXIS_OUT 1 0 2 NJ 70 NJ
-preplace netloc mindy_ETH1_TX 1 2 2 740 200 NJ
+preplace netloc ETH1_TX 1 2 2 740 200 NJ
 levelinfo -pg 1 0 220 570 870 990
 pagesize -pg 1 -db -bbox -sgen -140 0 1180 400
 ",
    "No Loops_ScaleFactor":"0.998467",
-   "No Loops_TopLeft":"-134,-134",
+   "No Loops_TopLeft":"-134,-151",
    "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
 preplace port S_AXI_FC -pg 1 -lvl 0 -x -30 -y 50 -defaultsOSRD

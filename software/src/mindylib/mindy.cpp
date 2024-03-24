@@ -39,6 +39,8 @@ const uint32_t  REG_HFD_BYTES_H = DF_BASE + 13*4;
 const uint32_t  REG_HFD_BYTES_L = DF_BASE + 14*4;
 const uint32_t  REG_HMD_BYTES_H = DF_BASE + 15*4;
 const uint32_t  REG_HMD_BYTES_L = DF_BASE + 16*4;
+const uint32_t   REG_ABM_ADDR_H = DF_BASE + 17*4;
+const uint32_t   REG_ABM_ADDR_L = DF_BASE + 18*4;
 
 
 // Registers in the "RDMX shim" module
@@ -306,6 +308,26 @@ void CMindy::setFrameSize(uint32_t size)
 uint32_t CMindy::getFrameSize()
 {
     return read32(REG_FRAME_SIZE);
+}
+//=================================================================================================    
+
+
+//=================================================================================================    
+// setHostAbmAddr() - Sets the address of the ABM in host-RAM
+//=================================================================================================
+void CMindy::setHostAbmAddr(uint64_t address)
+{
+    write32(REG_ABM_ADDR_H, address);
+}
+//=================================================================================================    
+
+
+//=================================================================================================    
+// getHostAbmAddr() - Returns the address of the ABM in host-RAM
+//=================================================================================================
+uint64_t CMindy::getHostAbmAddr()
+{
+    return read64(REG_ABM_ADDR_H);
 }
 //=================================================================================================    
 

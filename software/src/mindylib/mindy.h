@@ -33,6 +33,10 @@ public:
     // Call this to fetch the PCI address of a frame counter
     uint64_t    getFrameCounterPciAddress(uint32_t phase);
 
+    // Get and set the address of the ABM buffer in host-RAM
+    void        setHostAbmAddr(uint64_t address);
+    uint64_t    getHostAbmAddr();
+
     // Get and set the address of the data-frame buffers on the host PC
     void        setHostFrameDataAddr(uint32_t phase, uint32_t semiphase, uint64_t address);
     uint64_t    getHostFrameDataAddr(uint32_t phase, uint32_t semiphase);
