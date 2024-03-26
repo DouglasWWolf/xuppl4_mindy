@@ -20,7 +20,7 @@ module data_mover #
     parameter DW                = 512,
     parameter AW                = 64,
     parameter BYTE_COUNT        = 1024 * 1024,
-    parameter BURST_SIZE        = 4096,
+    parameter BURST_SIZE        = 2048,
     parameter[63:0] SRC_ADDRESS = 64'h0000_0000
 )
 (
@@ -136,6 +136,9 @@ reg wsm_state;   // W_channel  of DST_AXI
 // These count bursts for each of the state machines
 reg[31:0] ar_count, aw_count, w_count;
 
+// Do we have a valid destination address?
+wire dest_is_valid = (dest_address != 0);
+
 // We're always ready to receive write-acknowledgements
 assign DST_AXI_BREADY = 1;
 
@@ -151,7 +154,7 @@ always @(posedge clk) begin
         SRC_AXI_ARVALID <= 0;
     end else case (arsm_state)
 
-        0:  if (start) begin
+        0:  if (start & dest_is_valid) begin
                 ar_count        <= 1;
                 SRC_AXI_ARADDR  <= SRC_ADDRESS;
                 SRC_AXI_ARVALID <= 1;
@@ -187,7 +190,7 @@ always @(posedge clk) begin
         DST_AXI_AWVALID <= 0;
     end else case (awsm_state)
 
-        0:  if (start) begin
+        0:  if (start & dest_is_valid) begin
                 aw_count        <= 1;
                 DST_AXI_AWADDR  <= dest_address;
                 DST_AXI_AWVALID <= 1;
@@ -230,7 +233,7 @@ always @(posedge clk) begin
         wsm_state <= 0;
     end else case(wsm_state)
 
-        0:  if (start) begin
+        0:  if (start & dest_is_valid) begin
                 w_count   <= 1;
                 wsm_state <= 1;
             end
